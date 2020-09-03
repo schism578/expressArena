@@ -1,6 +1,30 @@
 const express = require('express');
 const morgan = require('morgan');
 
+
+
+
+app.get('/apps', (req, res) => {
+  const { search = "", sort } = req.query;
+
+  if (sort) {
+    if (!['rating', 'app'].includes(sort)) {
+      return res
+        .status(400)
+        .send('Sort must be one of rating or app');
+    }
+  }
+
+  let results = apps
+        .filter(app =>
+            app
+              .title
+              .toLowerCase()
+              .includes(search.toLowerCase()));
+
+
+
+
 const app = express();
 app.use(morgan('dev'));
 
