@@ -1,31 +1,47 @@
 const express = require('express');
 const morgan = require('morgan');
+const app = express();
 
+app.use(morgan('common'));
 
-
+const apps = require('./app-list.js');
 
 app.get('/apps', (req, res) => {
-  const { search = "", sort } = req.query;
+  const { sort, genre } = req.query;
 
   if (sort) {
-    if (!['rating', 'app'].includes(sort)) {
+    if (!['Rating', 'App'].includes(sort)) {
       return res
         .status(400)
         .send('Sort must be one of rating or app');
     }
   }
 
-  let results = apps
-        .filter(app =>
+  let results = genre 
+        ? apps.filter(app => 
             app
-              .title
-              .toLowerCase()
-              .includes(search.toLowerCase()));
+                .Genres
+                .includes(genre))
+        : apps;
 
+    if(sort === 'App') {
+        results.sort((a, b) => {
+          let appA = a.App.toLowerCase();
+          let appB = b.App.toLowerCase();
+          return appA > appB ? 1 
+          : appA < appB ? -1 : 0;
+        }); 
+    }  
+    if (sort === 'Rating') {
+        results.sort((a, b) => {
+           return b.Rating - a.Rating
+        });
+    }
 
+  res.
+    json(results);
+});
 
-
-const app = express();
 app.use(morgan('dev'));
 
     app.get('/', (req, res) => {
@@ -218,7 +234,5 @@ app.use(morgan('dev'));
       
         res.send(responseText);
       });
-      
-      app.listen(8000, () => {
-        console.log('Server started on PORT 8000');
-      });
+
+      module.exports = app;
